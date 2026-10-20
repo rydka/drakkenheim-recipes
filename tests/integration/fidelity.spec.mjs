@@ -75,7 +75,11 @@ test("M4: applied text = previewed text, and the flag rebuilds the block (50 cas
       return [...body.querySelectorAll("ul.drakkenheim-recipes-recipe > li")].map((li) => li.textContent);
     }, res.description);
     const expectedLines = preview.map((p) => `[${p.category}] ${p.text}`);
-    const rebuilt = await foundry(([f]) => game.modules.get("drakkenheim-recipes").api.renderRecipeHtml(f, { lang: "en" }), [res.flag]);
+    // compare in DOM-serialised form: outerHTML does not escape quotes in text nodes
+    const rebuilt = await foundry(([f]) => {
+      const html = game.modules.get("drakkenheim-recipes").api.renderRecipeHtml(f, { lang: "en" });
+      return [...new DOMParser().parseFromString(`<body>${html}</body>`, "text/html").body.children].map((e) => e.outerHTML).join("");
+    }, [res.flag]);
     const block = await blockOf(foundry, res.description);
     const sameLines = JSON.stringify(written) === JSON.stringify(expectedLines);
     const sameBlock = block === rebuilt;

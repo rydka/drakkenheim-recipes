@@ -77,7 +77,9 @@ test("C1: no button for a non-GM user", async ({ gamePage, foundry }) => {
   expect(await foundry(() => game.user.isGM)).toBe(true);
 });
 
-test("C1/C14: the module exposes its API and registers its settings", async ({ foundry }) => {
+test("C1/C14: the module exposes its API and registers its settings", async ({ gamePage, foundry }) => {
+  // the API is registered by the `ready` hook after a dynamic import: wait for it
+  await gamePage.waitForFunction((id) => !!game.modules.get(id)?.api, ID, { timeout: 10_000 });
   const state = await foundry((id) => {
     const m = game.modules.get(id);
     return {
