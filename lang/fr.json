@@ -1,0 +1,13 @@
+{
+  "drakkenheim-recipes": {
+    "settings": {
+      "enabled": {
+        "name": "Activer Drakkenheim Recipe Generator",
+        "hint": "Active ou désactive les fonctionnalités du module pour ce monde."
+      }
+    },
+    "errors": {
+      "wrongSystem": "Drakkenheim Recipe Generator nécessite le système dnd5e."
+    }
+  }
+}

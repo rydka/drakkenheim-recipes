@@ -1,0 +1,49 @@
+{
+  "id": "drakkenheim-recipes",
+  "title": "Drakkenheim Recipe Generator",
+  "description": "Generate Monsters of Drakkenheim crafting recipes (workshop and monster components) for any magic item, with schematics.",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Rydka"
+    }
+  ],
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "6.0.0",
+          "verified": "6.0.6"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "scripts/main.mjs"
+  ],
+  "styles": [
+    "styles/drakkenheim-recipes.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json"
+    }
+  ],
+  "url": "https://github.com/rydka/drakkenheim-recipes",
+  "manifest": "https://github.com/rydka/drakkenheim-recipes/releases/latest/download/module.json",
+  "download": "https://github.com/rydka/drakkenheim-recipes/releases/latest/download/module.zip",
+  "bugs": "https://github.com/rydka/drakkenheim-recipes/issues"
+}
