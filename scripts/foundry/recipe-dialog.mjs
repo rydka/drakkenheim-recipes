@@ -39,6 +39,8 @@ export class RecipeDialog extends Base {
   #rarities;
   #rarity;
   #recipe;
+  /** The last generated proposal, untouched by the GM: regeneration starts from its categories, not from the edits. */
+  #generated;
   #createSchematic;
   /** The GM edited, removed or added a line since the last generation. */
   #edited = false;
@@ -61,7 +63,13 @@ export class RecipeDialog extends Base {
     this.#rarity = this.#rarities[0];
     this.#createSchematic = this.#options.createSchematic;
     this.#existing = findRecipeBlock(this.#itemData.system?.description?.value ?? "");
-    this.#recipe = generateRecipe(this.#itemData, { ...this.#options, rarity: this.#rarity });
+    this.#propose(generateRecipe(this.#itemData, { ...this.#options, rarity: this.#rarity }));
+  }
+
+  /** Take a fresh proposal as the working recipe. */
+  #propose(recipe) {
+    this.#generated = foundry.utils.deepClone(recipe);
+    this.#recipe = recipe;
   }
 
   /** Open the preview of an item. */
@@ -156,7 +164,7 @@ export class RecipeDialog extends Base {
     this.#rarity = rarity;
     this.#lost = this.#edited;
     this.#edited = false;
-    this.#recipe = generateRecipe(this.#itemData, { ...this.#options, rarity });
+    this.#propose(generateRecipe(this.#itemData, { ...this.#options, rarity }));
     this.render();
   }
 
@@ -164,7 +172,7 @@ export class RecipeDialog extends Base {
     if (this.#busy) return;
     this.#lost = this.#edited;
     this.#edited = false;
-    this.#recipe = regenerateRecipe(this.#itemData, this.#recipe, { ...this.#options, rarity: this.#rarity });
+    this.#propose(regenerateRecipe(this.#itemData, this.#generated, { ...this.#options, rarity: this.#rarity }));
     this.render();
   }
 

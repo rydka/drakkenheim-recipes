@@ -27,13 +27,16 @@ export async function getSchematicFolder(name) {
   return Folder.create({ name, type: "Item" });
 }
 
-/** The Schematic of that item already in the folder: by item UUID first, then by name. */
+/**
+ * The Schematic of that item already in the folder: by item UUID first, then by name. Only items carrying the
+ * module flag qualify: an item the GM made by hand under the same name is never overwritten.
+ */
 function findExistingSchematic(folder, recipe, lang) {
-  const inFolder = game.items.filter((i) => i.folder?.id === folder.id);
+  const ours = game.items.filter((i) => i.folder?.id === folder.id && i.getFlag(MODULE_ID, FLAG_RECIPE));
   const byUuid = recipe.itemUuid
-    ? inFolder.find((i) => i.getFlag(MODULE_ID, FLAG_RECIPE)?.itemUuid === recipe.itemUuid)
+    ? ours.find((i) => i.getFlag(MODULE_ID, FLAG_RECIPE)?.itemUuid === recipe.itemUuid)
     : null;
-  return byUuid ?? inFolder.find((i) => i.name === schematicName(recipe.itemName, lang)) ?? null;
+  return byUuid ?? ours.find((i) => i.name === schematicName(recipe.itemName, lang)) ?? null;
 }
 
 /**

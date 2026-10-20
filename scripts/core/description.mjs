@@ -7,10 +7,13 @@ import { BLOCK_CLASS } from "../constants.mjs";
 const CLASS_ATTR = `class="[^"]*\\b${BLOCK_CLASS}\\b[^"]*"`;
 /** One `<p>` or `<ul>` carrying the module class. */
 const MODULE_ELEMENT = new RegExp(`<(p|ul)\\b[^>]*\\b${CLASS_ATTR}[^>]*>[\\s\\S]*?<\\/\\1>`, "g");
-/** Book paragraph ("Crafting." / "Artisanat.", em/strong optional) followed by its list. */
+/**
+ * Book paragraph ("Crafting." / "Artisanat.", em/strong optional) immediately followed by its list: the paragraph
+ * body cannot span another `</p>`, so nothing between a stray "Crafting." and a distant list is swallowed.
+ */
 const BOOK_BLOCK = new RegExp(
-  "<p(?:\\s[^>]*)?>(?:\\s*<(?:em|strong)(?:\\s[^>]*)?>)*\\s*(?:Crafting|Artisanat)\\.[\\s\\S]*?<\\/p>"
-  + "\\s*<ul(?:\\s[^>]*)?>[\\s\\S]*?<\\/ul>"
+  "<p(?:\\s[^>]*)?>(?:\\s*<(?:em|strong)(?:\\s[^>]*)?>)*\\s*(?:Crafting|Artisanat)\\.(?:(?!<\\/p>)[\\s\\S])*<\\/p>"
+  + "\\s*<ul(?:\\s[^>]*)?>(?:(?!<\\/ul>)[\\s\\S])*<\\/ul>"
   + "(?:\\s*<p(?:\\s[^>]*)?>\\s*(?:Each item must come from a different monster\\.|Chaque Composant doit provenir d'un monstre différent\\.)\\s*<\\/p>)?"
 );
 
