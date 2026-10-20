@@ -52,9 +52,41 @@ function sortTypes(types) {
 
 /** Creature types usable by the non-Animus parts of a themed recipe. */
 function partTypes(theme) {
+  if (theme.partTypes) return [...theme.partTypes];
   const types = [...theme.creatureTypes];
   if (theme.animal) for (const type of ANIMAL_TYPES) types.push({ type });
   return types;
+}
+
+/** Whether a category has a designation compatible with the creature type. */
+function canHost(category, type) {
+  return designationsOf(category).some((key) => {
+    const def = DESIGNATIONS[key];
+    return def.types.includes(type.type) && (!def.bound || def.bound === type.type);
+  });
+}
+
+/** Number of leading categories fixed by the plan (primaries then secondaries); the rest were drawn. */
+function fixedCount(kind, count) {
+  const plan = CATEGORY_PLANS[kind] ?? CATEGORY_PLANS.other;
+  return Math.min(count, plan.primary.length + plan.secondary.length);
+}
+
+/**
+ * Make sure the first theme type can be carried by a non-Animus part: when no category hosts it, one drawn
+ * category (never a plan primary or secondary) is swapped for one that does.
+ */
+function hostPrimaryType(categories, kind, primary, rng) {
+  if (!primary || categories.some((c) => canHost(c, primary))) return categories;
+  const fixed = fixedCount(kind, categories.length);
+  if (fixed >= categories.length) return categories;
+  const tally = {};
+  for (const c of categories) tally[c] = (tally[c] ?? 0) + 1;
+  const hosts = CATEGORY_ORDER.filter((c) => canHost(c, primary) && (tally[c] ?? 0) < MAX_PER_CATEGORY);
+  if (!hosts.length) return categories;
+  const swapped = [...categories];
+  swapped[categories.length - 1] = pick(rng, hosts);
+  return swapped;
 }
 
 /** Options `{ designation, creatureTypes, weight }` of a themed component of a category. */
@@ -80,13 +112,11 @@ function themedOptions(category, theme, types) {
 }
 
 /** A component that reflects the theme, preferring the `preferred` creature type; null when nothing fits. */
-function themedComponent(category, theme, types, preferred, rng) {
-  const options = themedOptions(category, theme, types);
+function themedComponent(category, theme, types, wanted, rng) {
+  let options = themedOptions(category, theme, types);
+  if (wanted) options = options.filter((o) => o.creatureTypes[0]?.type === wanted.type || DESIGNATIONS[o.designation].bound === wanted.type);
   if (!options.length) return null;
-  const focused = preferred
-    ? options.filter((o) => o.creatureTypes[0]?.type === preferred.type || theme.designations.includes(o.designation))
-    : [];
-  const chosen = weightedPick(rng, (focused.length ? focused : options).map((o) => ({ value: o, weight: o.weight })));
+  const chosen = weightedPick(rng, options.map((o) => ({ value: o, weight: o.weight })));
   return { designation: chosen.designation, creatureTypes: sortTypes(chosen.creatureTypes) };
 }
 
@@ -155,22 +185,28 @@ export function generateRecipe(itemData, options = {}, rng = Math.random) {
 
   const theme = detectTheme(itemData);
   const types = partTypes(theme);
+  if (!theme.empty && !options.categories?.length) categories = hostPrimaryType(categories, kind, types[0], rng);
   const parts = new Array(categories.length);
   if (theme.empty) {
     categories.forEach((category, i) => (parts[i] = plainComponent(category, theme, types, rng)));
   } else {
-    const required = Math.min(categories.length, Math.max(1, Math.ceil(categories.length / 2)));
-    const rotation = shuffle(rng, types);
+    // Each theme type, by priority, takes the first free slot able to carry it: the first type is guaranteed a
+    // line whenever a category can host it, the others follow while slots remain.
+    const free = shuffle(rng, categories.map((_, idx) => idx));
     let themed = 0;
-    let cursor = 0;
-    for (const i of shuffle(rng, categories.map((_, idx) => idx))) {
+    for (const type of types) {
+      const at = free.findIndex((i) => canHost(categories[i], type));
+      if (at < 0) continue;
+      const [i] = free.splice(at, 1);
+      parts[i] = themedComponent(categories[i], theme, types, type, rng) ?? plainComponent(categories[i], theme, types, rng);
+      themed++;
+    }
+    // Remaining slots: themed with any fitting type while under the required share, then by chance
+    const required = Math.min(categories.length, Math.max(1, Math.ceil(categories.length / 2)));
+    for (const i of free) {
       const wanted = themed < required || rng() < EXTRA_THEME_PROBABILITY;
-      const preferred = rotation.length ? rotation[cursor % rotation.length] : null;
-      const fields = wanted ? themedComponent(categories[i], theme, types, preferred, rng) : null;
-      if (fields) {
-        themed++;
-        cursor++;
-      }
+      const fields = wanted ? themedComponent(categories[i], theme, types, null, rng) : null;
+      if (fields) themed++;
       parts[i] = fields ?? plainComponent(categories[i], theme, types, rng);
     }
   }

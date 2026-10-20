@@ -7,7 +7,7 @@ import { stripRecipeBlock } from "./description.mjs";
 import {
   BEAST_KEYWORDS, CREATURE_KEYWORDS, DAMAGE_KEYWORDS, DAMAGE_THEMES, DESCRIPTION_DAMAGE_WORDS, IGNORED_DAMAGE
 } from "../rules/themes.mjs";
-import { CREATURE_TYPES } from "../rules/vocabulary.mjs";
+import { CREATURE_TYPES, DESIGNATIONS } from "../rules/vocabulary.mjs";
 
 const WEIGHT_DATA = 3;
 const WEIGHT_NAME = 3;
@@ -57,22 +57,32 @@ function dataDamageTypes(itemData) {
   return types;
 }
 
+/** Rank of a clue: the name of the item first, then the damage data, then the description. */
+const RANK_NAME = 0;
+const RANK_DAMAGE = 1;
+const RANK_DESCRIPTION = 2;
+
 class Scores {
+  /** damage type -> { score, strong } (strong: from the data or the name) */
   damage = new Map();
+  /** creature type -> { score, name } (name: found in the item name) */
   creature = new Map();
   animal = 0;
   sources = [];
 
-  add(map, key, weight, source) {
+  add(map, key, weight, source, strong) {
     if (!key) return;
-    map.set(key, (map.get(key) ?? 0) + weight);
+    const entry = map.get(key) ?? { score: 0, strong: false };
+    entry.score += weight;
+    entry.strong ||= strong;
+    map.set(key, entry);
     this.sources.push(source);
   }
 
   top(map, order, max) {
     const rank = (key) => (order.includes(key) ? order.indexOf(key) : order.length);
     return [...map.entries()]
-      .sort((a, b) => b[1] - a[1] || rank(a[0]) - rank(b[0]))
+      .sort((a, b) => Number(b[1].strong) - Number(a[1].strong) || b[1].score - a[1].score || rank(a[0]) - rank(b[0]))
       .slice(0, max)
       .map(([key]) => key);
   }
@@ -82,10 +92,10 @@ function scanName(name, scores) {
   const text = normalizeText(name);
   if (!text) return;
   for (const [keyword, type] of Object.entries(DAMAGE_KEYWORDS)) {
-    if (countWord(text, keyword)) scores.add(scores.damage, type, WEIGHT_NAME, `name:${keyword}`);
+    if (countWord(text, keyword)) scores.add(scores.damage, type, WEIGHT_NAME, `name:${keyword}`, true);
   }
   for (const [keyword, type] of Object.entries(CREATURE_KEYWORDS)) {
-    if (countWord(text, keyword)) scores.add(scores.creature, type, WEIGHT_NAME, `name:${keyword}`);
+    if (countWord(text, keyword)) scores.add(scores.creature, type, WEIGHT_NAME, `name:${keyword}`, true);
   }
   for (const keyword of BEAST_KEYWORDS) {
     if (countWord(text, keyword)) {
@@ -114,19 +124,23 @@ function scanDescription(html, scores) {
       const type = DESCRIPTION_DAMAGE_WORDS[match[1]];
       if (!type) continue;
       hits++;
-      scores.add(scores.damage, type, WEIGHT_DESCRIPTION, `description:${match[1]}`);
+      scores.add(scores.damage, type, WEIGHT_DESCRIPTION, `description:${match[1]}`, false);
     }
   }
   for (const [keyword, type] of Object.entries(CREATURE_KEYWORDS)) {
     const n = Math.min(3, countWord(text, keyword));
-    if (n) scores.add(scores.creature, type, WEIGHT_DESCRIPTION * n, `description:${keyword}`);
+    if (n) scores.add(scores.creature, type, WEIGHT_DESCRIPTION * n, `description:${keyword}`, false);
   }
 }
 
 /**
  * @typedef {object} Theme
  * @property {string[]} damageTypes                       At most two.
- * @property {{ type: string, variant?: string }[]} creatureTypes  Explicit types first, then those of the damage themes.
+ * @property {{ type: string, variant?: string }[]} creatureTypes  By priority: types named in the item name, then
+ *   those of the damage themes, then those found in the description. A named type takes the variant of a damage
+ *   theme when they agree ("Elemental" + fire -> Fire Elemental).
+ * @property {{ type: string, variant?: string }[]} partTypes  `creatureTypes` plus Beast and Monstrosity (first) for
+ *   an animal name: the types usable by the non-Animus parts, in priority order.
  * @property {string[]} designations                      Designation keys suggested by the damage themes.
  * @property {boolean} animal                             An animal name: non-Animus parts from a Beast or Monstrosity.
  * @property {string[]} sources                           Where the clues came from (informative).
@@ -139,7 +153,7 @@ function scanDescription(html, scores) {
  */
 export function detectTheme(itemData) {
   const scores = new Scores();
-  for (const type of dataDamageTypes(itemData)) scores.add(scores.damage, type, WEIGHT_DATA, `data:${type}`);
+  for (const type of dataDamageTypes(itemData)) scores.add(scores.damage, type, WEIGHT_DATA, `data:${type}`, true);
   scanName(itemData?.name, scores);
   scanDescription(itemData?.system?.description?.value, scores);
 
@@ -147,22 +161,36 @@ export function detectTheme(itemData) {
     .filter((type) => DAMAGE_THEMES[type]);
   const explicit = scores.top(scores.creature, Object.keys(CREATURE_TYPES), MAX_CREATURE);
 
+  // Candidate entries with their rank, then merged: a named type absorbs the variant of a damage theme
+  const candidates = explicit.map((type) => ({
+    type, rank: scores.creature.get(type).strong ? RANK_NAME : RANK_DESCRIPTION
+  }));
+  for (const damage of damageTypes) {
+    const rank = scores.damage.get(damage).strong ? RANK_DAMAGE : RANK_DESCRIPTION;
+    for (const entry of DAMAGE_THEMES[damage].creatureTypes) {
+      const named = candidates.find((c) => c.type === entry.type && !c.variant && c.rank !== RANK_DAMAGE);
+      if (named && entry.variant) named.variant = entry.variant;
+      else candidates.push({ type: entry.type, variant: entry.variant, rank });
+    }
+  }
+  candidates.sort((a, b) => a.rank - b.rank);
+
   const seen = new Set();
   const creatureTypes = [];
-  const addType = (entry) => {
+  for (const entry of candidates) {
     const key = `${entry.type}:${entry.variant ?? ""}`;
-    if (seen.has(key)) return;
+    if (seen.has(key)) continue;
     seen.add(key);
     creatureTypes.push(entry.variant ? { type: entry.type, variant: entry.variant } : { type: entry.type });
-  };
-  for (const type of explicit) addType({ type });
-  for (const damage of damageTypes) for (const entry of DAMAGE_THEMES[damage].creatureTypes) addType(entry);
+  }
 
   const designations = [...new Set(damageTypes.flatMap((damage) => DAMAGE_THEMES[damage].designations))];
   const animal = scores.animal > 0;
+  const partTypes = animal ? [{ type: "beast" }, { type: "monstrosity" }, ...creatureTypes] : [...creatureTypes];
   return {
     damageTypes,
     creatureTypes,
+    partTypes,
     designations,
     animal,
     sources: scores.sources,
@@ -172,7 +200,8 @@ export function detectTheme(itemData) {
 
 /**
  * Operational definition of M3: at least one non-Animus component carries one of the expected creature types or
- * designations. With no expectation at all, the recipe trivially matches.
+ * designations. A designation bound to a type ("Undead Dust", "Ectoplasm") counts as that type. With no expectation
+ * at all, the recipe trivially matches.
  * @param {object} recipe
  * @param {{ creatureTypes?: string[], designations?: string[] }} expected
  * @returns {boolean}
@@ -184,6 +213,8 @@ export function recipeMatches(recipe, expected = {}) {
   return (recipe?.components ?? []).some((component) => {
     if (component.category === "animus") return false;
     if (component.designation && designations.includes(component.designation)) return true;
+    const bound = DESIGNATIONS[component.designation]?.bound;
+    if (bound && types.includes(bound)) return true;
     return (component.creatureTypes ?? []).some((entry) => types.includes(entry.type));
   });
 }
