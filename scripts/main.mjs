@@ -1,31 +1,23 @@
-export const MODULE_ID = "drakkenheim-recipes";
+import { MODULE_ID } from "./constants.mjs";
+import { registerSettings } from "./foundry/settings.mjs";
+import { onGetHeaderControls, onRenderItemSheet } from "./foundry/sheet-button.mjs";
 
-/**
- * Register module settings. Called on the `init` hook.
- */
-export function registerSettings() {
-  game.settings.register(MODULE_ID, "enabled", {
-    name: `${MODULE_ID}.settings.enabled.name`,
-    hint: `${MODULE_ID}.settings.enabled.hint`,
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: true
-  });
-}
-
-export function isEnabled() {
-  return game.settings.get(MODULE_ID, "enabled");
-}
+export { MODULE_ID };
 
 Hooks.once("init", () => {
   registerSettings();
+  Hooks.on("renderItemSheet5e", onRenderItemSheet);
+  Hooks.on("getHeaderControlsItemSheet5e", onGetHeaderControls);
+  globalThis.foundry?.applications?.handlebars?.loadTemplates?.([`modules/${MODULE_ID}/templates/recipe-dialog.hbs`]);
 });
 
-Hooks.once("ready", () => {
+Hooks.once("ready", async () => {
   if (game.system.id !== "dnd5e") {
     ui.notifications.error(game.i18n.localize(`${MODULE_ID}.errors.wrongSystem`));
     return;
   }
+  // The window extends ApplicationV2: loaded once Foundry is ready, so that this file stays importable elsewhere.
+  const { registerApi } = await import("./foundry/api.mjs");
+  registerApi();
   console.log(`${MODULE_ID} | ready`);
 });

@@ -1,9 +1,55 @@
 {
   "drakkenheim-recipes": {
+    "Button": {
+      "Open": "Drakkenheim Recipe"
+    },
+    "Dialog": {
+      "Title": "Drakkenheim Recipe",
+      "Heading": "Drakkenheim Recipe: {name}",
+      "Workshop": "Workshop",
+      "CR": "Monster CR:",
+      "Category": "Category",
+      "Designation": "Component",
+      "AddRow": "Add a Component",
+      "DeleteRow": "Remove this Component",
+      "CreateSchematic": "Also create the Schematic",
+      "Regenerate": "Regenerate",
+      "Apply": "Apply",
+      "Cancel": "Cancel",
+      "Existing": "This item already has a crafting recipe: Apply will replace it.",
+      "EditedHint": "Regenerate will discard the lines you edited.",
+      "EditsLost": "Your edited lines were discarded by the regeneration."
+    },
+    "Messages": {
+      "Applied": "Crafting recipe written on {name}.",
+      "SchematicCreated": "{name} created in the Schematics folder.",
+      "SchematicUpdated": "{name} updated.",
+      "ItemLocked": "{name} belongs to a locked compendium: the item was not modified. Unlock the compendium or import the item to write the recipe on it.",
+      "ItemPermission": "You lack permission to modify {name}: the item was not modified.",
+      "ApplyFailed": "The recipe could not be applied: {error}"
+    },
     "settings": {
-      "enabled": {
-        "name": "Enable Drakkenheim Recipe Generator",
-        "hint": "Turn the module's features on or off for this world."
+      "countsPermanent": {
+        "name": "Components per rarity (permanent items)",
+        "hint": "Five numbers (2 to 10), Common to Legendary, separated by slashes. Default: 4/4/5/6/7."
+      },
+      "countsConsumable": {
+        "name": "Components per rarity (consumables)",
+        "hint": "Five numbers (2 to 10), Common to Legendary, separated by slashes. Default: 3/3/3/4/4."
+      },
+      "schematicFolder": {
+        "name": "Schematics folder",
+        "hint": "Name of the Items folder where Schematics are created."
+      },
+      "createSchematic": {
+        "name": "Create the Schematic by default",
+        "hint": "Initial state of the \"Also create the Schematic\" box in the preview."
+      },
+      "recipeLanguage": {
+        "name": "Language of the generated recipes",
+        "hint": "Language of the Crafting paragraph and of the Schematic. English keeps the text consistent with the Drakkenheim module.",
+        "en": "English",
+        "fr": "French"
       }
     },
     "errors": {

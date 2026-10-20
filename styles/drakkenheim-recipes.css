@@ -1,3 +1,89 @@
 /* Scope every rule under a module-specific class to avoid clashing with other modules. */
-.drakkenheim-recipes {
+.drakkenheim-recipes .drakkenheim-recipes-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.drakkenheim-recipes .hint {
+  margin: 0;
+  font-size: var(--font-size-12);
+  opacity: 0.85;
+}
+
+.drakkenheim-recipes .hint.warning {
+  color: var(--color-warm-2, #c77c22);
+  opacity: 1;
+}
+
+.drakkenheim-recipes .hidden {
+  display: none;
+}
+
+.drakkenheim-recipes .summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.drakkenheim-recipes .summary .workshop {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drakkenheim-recipes .components {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.drakkenheim-recipes .recipe-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.drakkenheim-recipes .recipe-row select {
+  flex: 0 0 9.5rem;
+}
+
+.drakkenheim-recipes .recipe-row input[type="text"] {
+  flex: 1;
+}
+
+.drakkenheim-recipes .recipe-row button.icon {
+  flex: 0 0 auto;
+}
+
+.drakkenheim-recipes .row-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.drakkenheim-recipes .distinct {
+  margin: 0;
+  font-style: italic;
+}
+
+.drakkenheim-recipes label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drakkenheim-recipes .form-footer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.drakkenheim-recipes .form-footer button {
+  flex: 1;
 }

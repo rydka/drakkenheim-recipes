@@ -1,9 +1,55 @@
 {
   "drakkenheim-recipes": {
+    "Button": {
+      "Open": "Recette Drakkenheim"
+    },
+    "Dialog": {
+      "Title": "Recette Drakkenheim",
+      "Heading": "Recette Drakkenheim : {name}",
+      "Workshop": "Atelier",
+      "CR": "FP des monstres :",
+      "Category": "Catégorie",
+      "Designation": "Composant",
+      "AddRow": "Ajouter un Composant",
+      "DeleteRow": "Supprimer ce Composant",
+      "CreateSchematic": "Créer aussi le Schematic",
+      "Regenerate": "Regénérer",
+      "Apply": "Appliquer",
+      "Cancel": "Annuler",
+      "Existing": "Cet objet a déjà une recette d'artisanat : Appliquer la remplacera.",
+      "EditedHint": "Regénérer effacera les lignes que vous avez modifiées.",
+      "EditsLost": "Vos lignes modifiées ont été perdues lors de la regénération."
+    },
+    "Messages": {
+      "Applied": "Recette d'artisanat écrite sur {name}.",
+      "SchematicCreated": "{name} créé dans le dossier des Schematics.",
+      "SchematicUpdated": "{name} mis à jour.",
+      "ItemLocked": "{name} appartient à un compendium verrouillé : l'objet n'a pas été modifié. Déverrouillez le compendium ou importez l'objet pour y écrire la recette.",
+      "ItemPermission": "Vous n'avez pas le droit de modifier {name} : l'objet n'a pas été modifié.",
+      "ApplyFailed": "La recette n'a pas pu être appliquée : {error}"
+    },
     "settings": {
-      "enabled": {
-        "name": "Activer Drakkenheim Recipe Generator",
-        "hint": "Active ou désactive les fonctionnalités du module pour ce monde."
+      "countsPermanent": {
+        "name": "Composants par rareté (objets permanents)",
+        "hint": "Cinq nombres (2 à 10), de Commun à Légendaire, séparés par des barres obliques. Défaut : 4/4/5/6/7."
+      },
+      "countsConsumable": {
+        "name": "Composants par rareté (consommables)",
+        "hint": "Cinq nombres (2 à 10), de Commun à Légendaire, séparés par des barres obliques. Défaut : 3/3/3/4/4."
+      },
+      "schematicFolder": {
+        "name": "Dossier des Schematics",
+        "hint": "Nom du dossier d'objets où les Schematics sont créés."
+      },
+      "createSchematic": {
+        "name": "Créer le Schematic par défaut",
+        "hint": "État initial de la case « Créer aussi le Schematic » dans l'aperçu."
+      },
+      "recipeLanguage": {
+        "name": "Langue des recettes générées",
+        "hint": "Langue du paragraphe d'artisanat et du Schematic. L'anglais reste homogène avec le module Drakkenheim.",
+        "en": "Anglais",
+        "fr": "Français"
       }
     },
     "errors": {
