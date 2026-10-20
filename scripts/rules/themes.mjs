@@ -53,7 +53,7 @@ export const IGNORED_DAMAGE = ["bludgeoning", "piercing", "slashing", "healing",
 /** Keyword (lower case, without diacritics) -> damage type. Names only. */
 export const DAMAGE_KEYWORDS = {
   flame: "fire", fire: "fire", fiery: "fire", burning: "fire", blaze: "fire", blazing: "fire", inferno: "fire",
-  ember: "fire", flamme: "fire", feu: "fire", ardent: "fire", ardente: "fire", brasier: "fire",
+  ember: "fire", fireball: "fire", flamme: "fire", feu: "fire", ardent: "fire", ardente: "fire", brasier: "fire",
   frost: "cold", ice: "cold", icy: "cold", cold: "cold", winter: "cold", snow: "cold", glacial: "cold",
   givre: "cold", glace: "cold", froid: "cold", gel: "cold", hiver: "cold", neige: "cold",
   storm: "lightning", lightning: "lightning", shock: "lightning", shocking: "lightning",
@@ -79,11 +79,11 @@ export const CREATURE_KEYWORDS = {
   "mort-vivant": "undead", "morts-vivants": "undead", liche: "undead", squelette: "undead", fantome: "undead",
   momie: "undead", goule: "undead",
   // dragon
-  dragon: "dragon", draconic: "dragon", drake: "dragon", wyrm: "dragon", wyvern: "dragon",
+  dragon: "dragon", draconic: "dragon", drake: "dragon", wyrm: "dragon", wyvern: "dragon", dragonkind: "dragon",
   draconique: "dragon", vouivre: "dragon",
   // fey
   fey: "fey", fae: "fey", faerie: "fey", fairy: "fey", elf: "fey", elven: "fey", elvish: "fey", pixie: "fey",
-  sprite: "fey", hag: "fey", satyr: "fey", dryad: "fey",
+  sprite: "fey", hag: "fey", satyr: "fey", dryad: "fey", elvenkind: "fey",
   fee: "fey", feerique: "fey", elfe: "fey", elfique: "fey", farfadet: "fey", dryade: "fey",
   // fiend
   fiend: "fiend", fiendish: "fiend", demon: "fiend", demonic: "fiend", devil: "fiend", devilish: "fiend",
@@ -93,7 +93,8 @@ export const CREATURE_KEYWORDS = {
   giant: "giant", ogre: "giant", troll: "giant", titan: "giant", cyclops: "giant", ettin: "giant",
   geant: "giant", geante: "giant", cyclope: "giant",
   // elemental
-  elemental: "elemental", elementaire: "elemental",
+  elemental: "elemental", efreeti: "elemental", djinni: "elemental", genie: "elemental", elementaire: "elemental",
+  efrit: "elemental", djinn: "elemental",
   // celestial
   celestial: "celestial", angel: "celestial", angelic: "celestial", heavenly: "celestial", seraph: "celestial",
   unicorn: "celestial", pegasus: "celestial",
@@ -127,7 +128,9 @@ export const BEAST_KEYWORDS = [
   "frog", "toad", "ram", "horse", "boar", "bull", "ox", "stag", "elk", "deer", "cat", "panther", "tiger", "raven",
   "crow", "rat", "mouse", "fox", "hound", "dog", "ape", "monkey", "crab", "beetle", "wasp", "bee", "fish", "octopus",
   "squid", "whale", "viper", "cobra", "rhino", "elephant", "mammoth", "goat", "bird", "falcon", "vulture", "lizard",
-  "crocodile", "turtle", "tortoise", "bison", "jackal", "hyena", "weasel", "badger", "mole",
+  "crocodile", "turtle", "tortoise", "bison", "jackal", "hyena", "weasel", "badger", "mole", "python", "adder",
+  "insect", "arachnid", "arachnida", "manta", "scarab", "animal", "beast", "leech", "lizard", "wyrmling", "animaux",
+  "bete", "insecte", "sangsue",
   "loup", "loups", "ours", "araignee", "aigle", "hibou", "chouette", "chauve-souris", "requin", "faucon",
   "grenouille", "crapaud", "belier", "cheval", "sanglier", "taureau", "cerf", "chat", "panthere", "tigre", "corbeau",
   "renard", "chien", "singe", "crabe", "scarabee", "guepe", "abeille", "poisson", "pieuvre", "baleine", "vipere",
