@@ -53,8 +53,17 @@ export function frenchOf(name) {
   if ((match = /^la\s+(.+)$/i.exec(full))) return { particle: "de la", name: match[1] };
   if ((match = /^les\s+(.+)$/i.exec(full))) return { particle: "des", name: match[1] };
   if ((match = /^l['’]\s*(.+)$/i.exec(full))) return { particle: "de l'", name: match[1] };
-  if (/^h/i.test(full) || startsWithVowel(full)) return { particle: "d'", name: full };
+  if (startsWithVowel(full) || startsWithMuteH(full)) return { particle: "d'", name: full };
   return { particle: "de", name: full };
+}
+
+/** French words with a mute h (elision applies); any other leading h is treated as aspirate or foreign. */
+const MUTE_H = ["habit", "harmonie", "herbe", "heure", "histoire", "hiver", "homme", "honneur", "horizon", "horloge",
+  "hôtel", "hotel", "huile", "humain", "hydre", "hymne"];
+
+function startsWithMuteH(name) {
+  const word = String(name ?? "").normalize("NFC").toLowerCase().match(/^[a-zà-ÿ]+/)?.[0] ?? "";
+  return MUTE_H.some((h) => word === h || word === `${h}s`);
 }
 
 function joinParticle(particle, html) {
@@ -169,10 +178,15 @@ export function renderRecipeHtml(recipe, { lang = recipe?.lang, nameHtml } = {})
   return `${header(recipe, l, nameHtml)}<ul class="${BLOCK_CLASS}">${items}</ul>${distinct}`;
 }
 
-/** Default `@UUID` link to the item of a recipe (plain name if the item has no UUID). */
+/**
+ * Default `@UUID` link to the item of a recipe (plain name if the item has no UUID). The label is HTML-escaped and
+ * cannot close the enricher (`]`, `}` removed); the UUID is reduced to its legal characters.
+ */
 export function itemLink(recipe) {
-  if (!recipe?.itemUuid) return `<em>${escapeHtml(recipe?.itemName)}</em>`;
-  return `@UUID[${recipe.itemUuid}]{${recipe.itemName}}`;
+  const uuid = String(recipe?.itemUuid ?? "").replace(/[^\w.-]/g, "");
+  if (!uuid) return `<em>${escapeHtml(recipe?.itemName)}</em>`;
+  const label = escapeHtml(String(recipe?.itemName ?? "").replace(/[[\]{}]/g, "")).trim();
+  return `@UUID[${uuid}]{${label}}`;
 }
 
 /**
