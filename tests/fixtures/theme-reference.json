@@ -1,0 +1,481 @@
+[
+ {
+  "name": "Flame Tongue Longsword",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ],
+   "designations": [
+    "elementalFluid",
+    "elementalDust"
+   ]
+  }
+ },
+ {
+  "name": "Frost Brand Rapier",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ]
+  }
+ },
+ {
+  "name": "Staff of Fire",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ],
+   "designations": [
+    "elementalFluid",
+    "elementalDust"
+   ]
+  }
+ },
+ {
+  "name": "Staff of Frost",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ]
+  }
+ },
+ {
+  "name": "Wand of Lightning Bolts",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ]
+  }
+ },
+ {
+  "name": "Staff of Thunder and Lightning",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ]
+  }
+ },
+ {
+  "name": "Holy Avenger Longsword",
+  "expected": {
+   "creatureTypes": [
+    "celestial"
+   ],
+   "designations": [
+    "celestialDust"
+   ]
+  }
+ },
+ {
+  "name": "Dragon Slayer Longsword",
+  "expected": {
+   "creatureTypes": [
+    "dragon"
+   ],
+   "designations": [
+    "dragonDust"
+   ]
+  }
+ },
+ {
+  "name": "Giant Slayer Greataxe",
+  "expected": {
+   "creatureTypes": [
+    "giant"
+   ]
+  }
+ },
+ {
+  "name": "Belt of Fire Giant Strength",
+  "expected": {
+   "creatureTypes": [
+    "giant"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Storm Giant Strength",
+  "expected": {
+   "creatureTypes": [
+    "giant"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Fire Resistance",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ],
+   "designations": [
+    "elementalFluid",
+    "elementalDust"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Acid Resistance",
+  "expected": {
+   "creatureTypes": [
+    "ooze",
+    "dragon"
+   ],
+   "designations": [
+    "acidicBile"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Necrotic Resistance",
+  "expected": {
+   "creatureTypes": [
+    "undead",
+    "fiend"
+   ],
+   "designations": [
+    "undeadDust",
+    "ectoplasm"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Radiant Resistance",
+  "expected": {
+   "creatureTypes": [
+    "celestial"
+   ],
+   "designations": [
+    "celestialDust"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Psychic Resistance",
+  "expected": {
+   "creatureTypes": [
+    "aberration"
+   ],
+   "designations": [
+    "brain"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Force Resistance",
+  "expected": {
+   "creatureTypes": [
+    "construct",
+    "aberration"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Poison Resistance",
+  "expected": {
+   "creatureTypes": [
+    "monstrosity",
+    "plant",
+    "dragon"
+   ],
+   "designations": [
+    "venom"
+   ]
+  }
+ },
+ {
+  "name": "Ring of Cold Resistance",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ]
+  }
+ },
+ {
+  "name": "Ring of Lightning Resistance",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ]
+  }
+ },
+ {
+  "name": "Ring of Thunder Resistance",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon"
+   ]
+  }
+ },
+ {
+  "name": "Ring of Fire Elemental Command",
+  "expected": {
+   "creatureTypes": [
+    "elemental"
+   ],
+   "designations": [
+    "elementalDust",
+    "elementalFluid"
+   ]
+  }
+ },
+ {
+  "name": "Ring of Water Elemental Command",
+  "expected": {
+   "creatureTypes": [
+    "elemental"
+   ],
+   "designations": [
+    "elementalDust",
+    "elementalFluid"
+   ]
+  }
+ },
+ {
+  "name": "Staff of the Python",
+  "expected": {
+   "creatureTypes": [
+    "beast",
+    "monstrosity"
+   ]
+  }
+ },
+ {
+  "name": "Cloak of Arachnida",
+  "expected": {
+   "creatureTypes": [
+    "beast",
+    "monstrosity"
+   ]
+  }
+ },
+ {
+  "name": "Cloak of the Bat",
+  "expected": {
+   "creatureTypes": [
+    "beast",
+    "monstrosity"
+   ]
+  }
+ },
+ {
+  "name": "Ring of the Ram",
+  "expected": {
+   "creatureTypes": [
+    "beast",
+    "monstrosity"
+   ]
+  }
+ },
+ {
+  "name": "Eyes of the Eagle",
+  "expected": {
+   "creatureTypes": [
+    "beast",
+    "monstrosity"
+   ]
+  }
+ },
+ {
+  "name": "Elven Chain",
+  "expected": {
+   "creatureTypes": [
+    "fey"
+   ],
+   "designations": [
+    "feyDust"
+   ]
+  }
+ },
+ {
+  "name": "Boots of Elvenkind",
+  "expected": {
+   "creatureTypes": [
+    "fey"
+   ],
+   "designations": [
+    "feyDust"
+   ]
+  }
+ },
+ {
+  "name": "Demon Armor",
+  "expected": {
+   "creatureTypes": [
+    "fiend"
+   ],
+   "designations": [
+    "fiendDust"
+   ]
+  }
+ },
+ {
+  "name": "Manual of Golems",
+  "expected": {
+   "creatureTypes": [
+    "construct"
+   ]
+  }
+ },
+ {
+  "name": "Sword of Life Stealing",
+  "expected": {
+   "creatureTypes": [
+    "undead",
+    "fiend"
+   ],
+   "designations": [
+    "undeadDust",
+    "ectoplasm"
+   ]
+  }
+ },
+ {
+  "name": "Dragon Scale Mail",
+  "expected": {
+   "creatureTypes": [
+    "dragon"
+   ],
+   "designations": [
+    "dragonDust"
+   ]
+  }
+ },
+ {
+  "name": "Orb of Dragonkind",
+  "expected": {
+   "creatureTypes": [
+    "dragon"
+   ],
+   "designations": [
+    "dragonDust"
+   ]
+  }
+ },
+ {
+  "name": "Brazier of Commanding Fire Elementals",
+  "expected": {
+   "creatureTypes": [
+    "elemental"
+   ],
+   "designations": [
+    "elementalDust",
+    "elementalFluid"
+   ]
+  }
+ },
+ {
+  "name": "Censer of Controlling Air Elementals",
+  "expected": {
+   "creatureTypes": [
+    "elemental"
+   ],
+   "designations": [
+    "elementalDust",
+    "elementalFluid"
+   ]
+  }
+ },
+ {
+  "name": "Stone of Controlling Earth Elementals",
+  "expected": {
+   "creatureTypes": [
+    "elemental"
+   ],
+   "designations": [
+    "elementalDust",
+    "elementalFluid"
+   ]
+  }
+ },
+ {
+  "name": "Periapt of Proof against Poison",
+  "expected": {
+   "creatureTypes": [
+    "monstrosity",
+    "plant",
+    "dragon"
+   ],
+   "designations": [
+    "venom"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Poison",
+  "expected": {
+   "creatureTypes": [
+    "monstrosity",
+    "plant",
+    "dragon"
+   ],
+   "designations": [
+    "venom"
+   ]
+  }
+ },
+ {
+  "name": "Potion of Fire Giant Strength",
+  "expected": {
+   "creatureTypes": [
+    "giant"
+   ]
+  }
+ },
+ {
+  "name": "Elemental Gem of Water",
+  "expected": {
+   "creatureTypes": [
+    "elemental"
+   ],
+   "designations": [
+    "elementalDust",
+    "elementalFluid"
+   ]
+  }
+ },
+ {
+  "name": "Helm of Brilliance",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "dragon",
+    "celestial"
+   ],
+   "designations": [
+    "elementalFluid",
+    "elementalDust"
+   ]
+  }
+ },
+ {
+  "name": "Ring of Air Elemental Command",
+  "expected": {
+   "creatureTypes": [
+    "elemental"
+   ],
+   "designations": [
+    "elementalDust",
+    "elementalFluid"
+   ]
+  }
+ },
+ {
+  "name": "Efreeti Bottle",
+  "expected": {
+   "creatureTypes": [
+    "elemental",
+    "fiend"
+   ]
+  }
+ }
+]

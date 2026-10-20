@@ -4,10 +4,13 @@ const load = () => import("../../scripts/main.mjs");
 
 describe("main", () => {
   it("registers its settings on init", async () => {
-    const { MODULE_ID, isEnabled } = await load();
+    await load();
     Hooks.callAll("init");
-    expect(game.settings.register).toHaveBeenCalledWith(MODULE_ID, "enabled", expect.any(Object));
-    expect(isEnabled()).toBe(true);
+    const keys = game.settings.register.mock.calls.map((c) => `${c[0]}.${c[1]}`);
+    for (const k of ["countsPermanent", "countsConsumable", "schematicFolder", "createSchematic", "recipeLanguage"]) {
+      expect(keys).toContain(`drakkenheim-recipes.${k}`);
+    }
+    expect(keys).not.toContain("drakkenheim-recipes.enabled");
   });
 
   it("reports an error when the system is not dnd5e", async () => {

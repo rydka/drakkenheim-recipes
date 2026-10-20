@@ -5,9 +5,16 @@ const MODULE_ID = "drakkenheim-recipes";
 test("module is active and registers its settings", async ({ foundry }) => {
   const state = await foundry((id) => ({
     active: game.modules.get(id)?.active ?? false,
-    enabled: game.settings.get(id, "enabled")
+    recipeLanguage: game.settings.get(id, "recipeLanguage"),
+    countsPermanent: game.settings.get(id, "countsPermanent"),
+    countsConsumable: game.settings.get(id, "countsConsumable"),
+    schematicFolder: game.settings.get(id, "schematicFolder"),
+    createSchematic: game.settings.get(id, "createSchematic")
   }), MODULE_ID);
-  expect(state).toEqual({ active: true, enabled: true });
+  expect(state).toEqual({
+    active: true, recipeLanguage: "en", countsPermanent: "4/4/5/6/7", countsConsumable: "3/3/3/4/4",
+    schematicFolder: "Schematics", createSchematic: true
+  });
 });
 
 test("no errors are logged while the world loads", async ({ page }) => {
