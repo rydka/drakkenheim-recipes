@@ -1,0 +1,53 @@
+<div class="drakkenheim-recipes-body">
+  {{#if existing}}
+  <p class="hint warning existing-warning"><i class="fa-solid fa-triangle-exclamation" inert></i> {{localize "drakkenheim-recipes.Dialog.Existing"}}</p>
+  {{/if}}
+  {{#if lost}}
+  <p class="hint warning lost-warning"><i class="fa-solid fa-triangle-exclamation" inert></i> {{localize "drakkenheim-recipes.Dialog.EditsLost"}}</p>
+  {{/if}}
+
+  <div class="summary">
+    <label class="workshop">
+      <span>{{localize "drakkenheim-recipes.Dialog.Workshop"}}</span>
+      {{#if rarities}}
+      <select name="rarity">
+        {{#each rarities}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+      {{else}}
+      <strong>{{workshop}}</strong>
+      {{/if}}
+    </label>
+    <span class="cr">{{localize "drakkenheim-recipes.Dialog.CR"}} <strong>{{crRange}}</strong></span>
+  </div>
+
+  <ul class="components">
+    {{#each rows}}
+    <li class="recipe-row {{#if animus}}animus{{/if}}" data-index="{{index}}">
+      <select class="row-category" data-index="{{index}}" aria-label="{{localize "drakkenheim-recipes.Dialog.Category"}}" {{#if animus}}disabled{{/if}}>
+        {{#each categories}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+      <input type="text" class="row-text" data-index="{{index}}" value="{{text}}" aria-label="{{localize "drakkenheim-recipes.Dialog.Designation"}}">
+      {{#unless animus}}
+      <button type="button" class="icon fa-solid fa-trash" data-action="deleteRow" data-index="{{index}}" data-tooltip="{{localize "drakkenheim-recipes.Dialog.DeleteRow"}}" aria-label="{{localize "drakkenheim-recipes.Dialog.DeleteRow"}}"></button>
+      {{/unless}}
+    </li>
+    {{/each}}
+  </ul>
+  <div class="row-actions">
+    <button type="button" data-action="addRow"><i class="fa-solid fa-plus" inert></i> {{localize "drakkenheim-recipes.Dialog.AddRow"}}</button>
+  </div>
+
+  {{#if distinct}}<p class="distinct">{{distinct}}</p>{{/if}}
+  <p class="hint edited-hint {{#unless edited}}hidden{{/unless}}">{{localize "drakkenheim-recipes.Dialog.EditedHint"}}</p>
+
+  <label class="checkbox">
+    <input type="checkbox" name="createSchematic" {{checked createSchematic}}>
+    {{localize "drakkenheim-recipes.Dialog.CreateSchematic"}}
+  </label>
+
+  <footer class="form-footer">
+    <button type="button" data-action="regenerate"><i class="fa-solid fa-dice" inert></i> {{localize "drakkenheim-recipes.Dialog.Regenerate"}}</button>
+    <button type="button" data-action="apply"><i class="fa-solid fa-check" inert></i> {{localize "drakkenheim-recipes.Dialog.Apply"}}</button>
+    <button type="button" data-action="cancel"><i class="fa-solid fa-xmark" inert></i> {{localize "drakkenheim-recipes.Dialog.Cancel"}}</button>
+  </footer>
+</div>
