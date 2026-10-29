@@ -278,15 +278,18 @@ export async function syncFabricateRecipe(item, recipe, { schematic = null, item
     }
     const recipeId = fabricateRecipe?.id ?? existing?.id;
 
-    // 9. Link between the recipe item and the recipe (membership by `recipeIds`); unlink when the Schematic is off
+    // 9. Link between the recipe item and the recipe (membership by `recipeIds`); the definition noted at the
+    //    previous application loses the link when the Schematic is off or has changed
     if (definition) {
       const ids = definition.recipeIds ?? [];
       if (!ids.includes(recipeId)) {
         await step("updateRecipeItemDefinition", () =>
           systems.updateRecipeItemDefinition(systemId, definition.id, { recipeIds: [...ids, recipeId] }));
       }
-    } else if (previous?.recipeItemId && typeof systems.getRecipeItemDefinition === "function") {
-      const old = systems.getRecipeItemDefinition(systemId, previous.recipeItemId);
+    }
+    const previousDefinitionId = previous?.recipeItemId ?? null;
+    if (previousDefinitionId && previousDefinitionId !== (definition?.id ?? null) && typeof systems.getRecipeItemDefinition === "function") {
+      const old = systems.getRecipeItemDefinition(systemId, previousDefinitionId);
       if (old?.recipeIds?.includes(recipeId)) {
         await step("updateRecipeItemDefinition", () =>
           systems.updateRecipeItemDefinition(systemId, old.id, { recipeIds: old.recipeIds.filter((id) => id !== recipeId) }));
