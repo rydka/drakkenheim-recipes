@@ -125,8 +125,13 @@ async function ensureGenericItems(folder, specs, kind, toData) {
   }
   if (missing.length) {
     const Item = foundry.utils.getDocumentClass("Item");
-    const created = await Item.createDocuments(missing.map((spec) => toData(spec, { folderId: folder.id })));
-    for (const [index, spec] of missing.entries()) items[spec.key] = created[index] ?? find(spec);
+    await Item.createDocuments(missing.map((spec) => toData(spec, { folderId: folder.id })));
+    // The documents are not returned in the order of the list: each one is found again by its flag, then its name
+    for (const spec of missing) {
+      const doc = find(spec);
+      if (!doc) throw new Error(`Generic item "${spec.name}" was not created`);
+      items[spec.key] = doc;
+    }
   }
   return { items, created: missing.length };
 }
