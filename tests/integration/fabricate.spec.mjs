@@ -203,6 +203,7 @@ fabTest("C4: generic components exist in the folder as loot/material, 1 lb, regi
   const folder = await itemsInFolder(foundry, COMP_FOLDER);
   const st = await fabState(foundry, name);
   const rows = [];
+  fs.writeFileSync(test.info().outputPath("C4-etat-brut.json"), JSON.stringify({ recipe: recipe.components, folder: folder.map((f) => ({ name: f.name, uuid: f.uuid })), components: st.components.map((c) => ({ name: c.name, category: c.category, tags: c.tags, reg: c.registeredItemUuid })) }, null, 1));
   for (const key of expectedComponentKeys(recipe)) {
     const n = expectedComponentName(key);
     const item = folder.find((i) => i.name === n);
@@ -228,13 +229,16 @@ fabTest("C4: an existing item of the same name in the folder is reused, never du
   const name = `${SYS} reuse`;
   await useNames(foundry, name);
   const folderId = await foundry(async (n) => (await foundry.utils.getDocumentClass("Folder").create({ name: n, type: "Item" })).id, COMP_FOLDER);
-  const pre = await foundry(async (f) => (await Item.implementation.create({ name: "Rare Animus", type: "loot", folder: f })).uuid, folderId);
   const id = await create(foundry, weaponData());
-  await applyOn(foundry, { itemId: id, seed: 3 });
+  const recipe = await foundry(([mid, i]) => { const a = game.modules.get(mid).api; const it = game.items.get(i); return a.generateRecipe(Object.assign(it.toObject(), { uuid: it.uuid }), a.getOptions(), a.mulberry32(3)); }, [ID, id]);
+  const preName = expectedComponentName(expectedComponentKeys(recipe)[0]); // a part this very recipe needs
+  const pre = await foundry(async ([f, n]) => (await Item.implementation.create({ name: n, type: "loot", folder: f })).uuid, [folderId, preName]);
+  await applyOn(foundry, { itemId: id, recipe });
   const first = await itemsInFolder(foundry, COMP_FOLDER);
-  expect(first.filter((i) => i.name === "Rare Animus")).toHaveLength(1);
-  expect(first.find((i) => i.name === "Rare Animus").uuid).toBe(pre);
+  expect(first.filter((i) => i.name === preName)).toHaveLength(1);
+  expect(first.find((i) => i.name === preName).uuid).toBe(pre);
   const st = await fabState(foundry, name);
+  fs.writeFileSync(test.info().outputPath("C4-reutilisation-debug.json"), JSON.stringify({ pre, folder: first.map((i) => ({ name: i.name, uuid: i.uuid })), components: st.components.map((c) => ({ id: c.id, name: c.name, keys: Object.keys(c), reg: c.registeredItemUuid, origin: c.originItemUuid, tags: c.tags })) }, null, 1));
   expect(st.components.some((c) => (c.registeredItemUuid ?? c.originItemUuid) === pre)).toBe(true);
   await applyOn(foundry, { itemId: id, reuse: true });
   expect((await itemsInFolder(foundry, COMP_FOLDER)).length).toBe(first.length);
@@ -278,7 +282,9 @@ fabTest("C6/C7: the recipe has the item's name, rarity category, text descriptio
   expect(recipe.description).toContain("DRT odd bone from a hag");
   expect(recipe.description).not.toMatch(/<\/?(p|ul|li|em)>/);
   const result = recipe.resultGroups[0].results[0];
-  expect(result.kind).toBe("component");
+  // Fabricate normalises a stored result to { componentId, systemItemId, itemUuid: null, quantity } (no `kind` field)
+  expect(result.componentId).toBeTruthy();
+  expect(result.itemUuid ?? null).toBeNull();
   expect(result.quantity).toBe(1);
   const comp = st.components.find((c) => c.id === result.componentId);
   expect(comp, "result component").toBeTruthy();
@@ -594,7 +600,7 @@ fabTest("M4: canCraft with generic components, then without one component (10 re
       return (await actor.createEmbeddedDocuments("Item", docs)).map((d) => d.id);
     };
     for (const recipe of recipes.filter((r) => r.name.startsWith("DRT "))) {
-      const row = { recipe: recipe.name, tier: null, ok: null, missingRemoved: null, extra: {} };
+      const row = { recipe: recipe.name, tier: null, ok: null, missingRemoved: null, extra: {}, owned: [] };
       const set = recipe.ingredientSets[0];
       row.tier = tierOfSet(set);
       const actor = await Actor.implementation.create({ name: `DRT Crafter ${recipe.name}`, type: "character" });
@@ -606,6 +612,8 @@ fabTest("M4: canCraft with generic components, then without one component (10 re
           const comp = pickComponent(g.options[0].match.tags);
           owned.push({ group: g, uuid: comp?.registeredItemUuid ?? null, ids: comp ? await giveCopies(actor, comp.registeredItemUuid, g.options[0].quantity) : [] });
         }
+        row.owned = owned.map((o) => ({ group: o.group.name, tags: o.group.options.map((x) => x.match.tags), uuid: o.uuid, n: o.ids.length }));
+        row.actorItems = actor.items.map((i) => i.name);
         const r1 = await rm.canCraft([actor], recipe, { craftingActor: actor });
         row.ok = r1.canCraft;
         row.r1 = JSON.parse(JSON.stringify(r1.missing ?? null));
@@ -613,8 +621,7 @@ fabTest("M4: canCraft with generic components, then without one component (10 re
         const victim = [...owned].sort((a, b) => b.group.options[0].match.tags.length - a.group.options[0].match.tags.length)[0];
         await actor.deleteEmbeddedDocuments("Item", victim.ids);
         const r2 = await rm.canCraft([actor], recipe, { craftingActor: actor });
-        const miss = JSON.stringify(r2.missing?.ingredients ?? []);
-        row.missingRemoved = { canCraft: r2.canCraft, count: (r2.missing?.ingredients ?? []).length, names: victim.group.name, namesMatch: miss.includes(victim.group.id) || miss.includes(victim.group.name), raw: JSON.parse(JSON.stringify(r2.missing ?? null)) };
+        row.missingRemoved = { canCraft: r2.canCraft, count: (r2.missing?.ingredients ?? []).length, names: victim.group.name, namesMatch: (r2.missing?.ingredients ?? []).some((m) => JSON.stringify(m.ingredient?.match?.tags ?? []) === JSON.stringify(victim.group.options[0].match.tags)), raw: JSON.parse(JSON.stringify(r2.missing ?? null)) };
         // extras: legendary workshop alone, lower workshop alone
         if (row.tier !== "legendary") {
           const legSet = recipe.ingredientSets.at(-1);
