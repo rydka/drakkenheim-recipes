@@ -316,7 +316,8 @@ export function translateRecipe(recipe, ctx = {}) {
   const mode = ctx.mode ?? FABRICATE_DEFAULT_MODE;
   const routed = mode === FABRICATE_DEFAULT_MODE;
   const components = componentSpecs(recipe, { lang });
-  const tools = workshopSpecs(recipe, { lang });
+  // Outside the routed mode only the exact Workshop can be required: the higher ones would be registered for nothing
+  const tools = routed ? workshopSpecs(recipe, { lang }) : workshopSpecs(recipe, { lang }).slice(0, 1);
   const groups = buildGroups(recipe, { lang });
   const componentId = (key) => ctx.componentIds?.[key] ?? `cmp:${key}`;
   const toolId = (tier) => ctx.toolIds?.[tier] ?? `tool:${tier}`;
