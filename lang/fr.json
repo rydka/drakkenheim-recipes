@@ -13,6 +13,7 @@
       "AddRow": "Ajouter un Composant",
       "DeleteRow": "Supprimer ce Composant",
       "CreateSchematic": "Créer aussi le Schematic",
+      "CreateFabricate": "Créer aussi la recette Fabricate",
       "Regenerate": "Regénérer",
       "Apply": "Appliquer",
       "Cancel": "Annuler",
@@ -26,7 +27,11 @@
       "SchematicUpdated": "{name} mis à jour.",
       "ItemLocked": "{name} appartient à un compendium verrouillé : l'objet n'a pas été modifié. Déverrouillez le compendium ou importez l'objet pour y écrire la recette.",
       "ItemPermission": "Vous n'avez pas le droit de modifier {name} : l'objet n'a pas été modifié.",
-      "ApplyFailed": "La recette n'a pas pu être appliquée : {error}"
+      "ApplyFailed": "La recette n'a pas pu être appliquée : {error}",
+      "FabricateCreated": "Recette Fabricate « {name} » créée dans « {system} » ({components} composants, {tools} outils et {items} objets nouveaux).",
+      "FabricateUpdated": "Recette Fabricate « {name} » mise à jour dans « {system} » ({components} composants, {tools} outils et {items} objets nouveaux).",
+      "FabricateFailed": "Fabricate : échec à l'étape {step} : {error}. La description, le drapeau et le Schematic sont conservés.",
+      "FabricateApi": "Fabricate : version incompatible, rien n'a été écrit (manque : {missing})."
     },
     "settings": {
       "countsPermanent": {
@@ -50,6 +55,22 @@
         "hint": "Langue du paragraphe d'artisanat et du Schematic. L'anglais reste homogène avec le module Drakkenheim.",
         "en": "Anglais",
         "fr": "Français"
+      },
+      "fabricateEnabled": {
+        "name": "Intégration Fabricate par défaut",
+        "hint": "État initial de la case « Créer aussi la recette Fabricate » dans l'aperçu."
+      },
+      "fabricateSystemName": {
+        "name": "Système d'artisanat Fabricate",
+        "hint": "Nom du système d'artisanat Fabricate qui reçoit les recettes ; créé s'il manque."
+      },
+      "fabricateComponentFolder": {
+        "name": "Dossier des composants de monstres",
+        "hint": "Nom du dossier d'objets où les composants génériques (Os Rare, Animus Rare...) sont créés."
+      },
+      "fabricateWorkshopFolder": {
+        "name": "Dossier des ateliers",
+        "hint": "Nom du dossier d'objets où les outils Atelier sont créés."
       }
     },
     "errors": {
