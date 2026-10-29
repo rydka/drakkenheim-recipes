@@ -88,11 +88,6 @@ async function step(name, fn) {
   }
 }
 
-const sameSet = (a, b) => {
-  const left = new Set(a ?? []);
-  const right = new Set(b ?? []);
-  return left.size === right.size && [...left].every((v) => right.has(v));
-};
 
 const sourceOf = (entry) => [entry?.registeredItemUuid, entry?.originItemUuid, ...(entry?.aliasItemUuids ?? [])].filter(Boolean);
 
@@ -136,7 +131,16 @@ async function ensureGenericItems(folder, specs, kind, toData) {
   return { items, created: missing.length };
 }
 
-/** Register an item as a component of the system (reused when already registered) and set its category and tags. */
+/** Fabricate's default component category ("general") or none. */
+const unsetCategory = (category) => {
+  const value = String(category ?? "").trim();
+  return !value || value.toLowerCase() === "general";
+};
+
+/**
+ * Register an item as a component of the system (reused when already registered), then complete it: our category
+ * when it has none, our tags added to those already there (the GM's own edits are kept).
+ */
 async function ensureComponent(manager, systemId, item, spec, created) {
   const uuid = item.uuid;
   let component = manager.getComponentsForSystem(systemId).find((c) => sourceOf(c).includes(uuid)) ?? null;
@@ -145,9 +149,14 @@ async function ensureComponent(manager, systemId, item, spec, created) {
     component = res?.item ?? res;
     if (res?.action === "added") created.components += 1;
   }
-  if (spec && (component.category !== spec.categoryLabel || !sameSet(component.tags, spec.tags))) {
-    const updated = await step("updateItem", () => manager.updateItem(systemId, component.id, { category: spec.categoryLabel, tags: [...spec.tags] }));
-    component = updated?.item ?? updated ?? component;
+  if (spec) {
+    const current = Array.isArray(component.tags) ? component.tags : [];
+    const category = unsetCategory(component.category) ? spec.categoryLabel : component.category;
+    const tags = [...new Set([...current, ...spec.tags])];
+    if (category !== component.category || tags.length !== current.length) {
+      const updated = await step("updateItem", () => manager.updateItem(systemId, component.id, { category, tags }));
+      component = updated?.item ?? updated ?? component;
+    }
   }
   return component;
 }
