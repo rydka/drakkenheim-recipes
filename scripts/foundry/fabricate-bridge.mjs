@@ -239,7 +239,8 @@ export async function syncFabricateRecipe(item, recipe, { schematic = null, item
     const Recipe = game.fabricate.api?.Recipe;
     if (typeof Recipe === "function") {
       await step("validate", () => {
-        const verdict = new Recipe(draft.recipeData).validateStructure?.();
+        // Same arguments as Fabricate's own persistence check (`Roll` validates quantity formulas, unused here)
+        const verdict = new Recipe(draft.recipeData).validateStructure?.({ Roll: globalThis.Roll });
         if (verdict && verdict.valid === false) throw new Error((verdict.errors ?? []).join("; ") || "invalid recipe");
       });
     }
