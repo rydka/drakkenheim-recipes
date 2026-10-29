@@ -184,11 +184,14 @@ export function acceptedWorkshops(recipe) {
 }
 
 /**
- * @returns {{ tier: string, name: string, description: string }[]}
+ * @returns {{ key: string, tier: string, name: string, description: string }[]}   `key` (= tier) is the
+ *   `generic.key` flag of the Workshop item.
  */
 export function workshopSpecs(recipe, { lang = recipe?.lang } = {}) {
   const l = language(lang);
-  return acceptedWorkshops(recipe).map((tier) => ({ tier, name: workshopName(tier, l), description: workshopDescription(tier, l) }));
+  return acceptedWorkshops(recipe).map((tier) => ({
+    key: tier, tier, name: workshopName(tier, l), description: workshopDescription(tier, l)
+  }));
 }
 
 /** Every tag the module may use: 8 categories, 5 rarities, 14 creature types. */
