@@ -138,6 +138,20 @@ export function distinctSentence(recipe, lang = recipe?.lang) {
   return recipe?.distinctSources ? DISTINCT[language(lang)] : "";
 }
 
+/** Plain-text header of the "Crafting." paragraph (Fabricate recipe description). */
+function headerText(recipe, l) {
+  const rarity = rarityLabel(recipe.workshop, l);
+  if (l === "fr") {
+    const plural = rarityLabel(recipe.workshop, l, true);
+    const { particle, name } = frenchOf(recipe.itemName);
+    return `Artisanat. La création ${joinParticle(particle, name)} requiert un Atelier ${rarity} et les Composants `
+      + `${plural} suivants :`;
+  }
+  const article = englishArticle(recipe.itemName);
+  return `Crafting. Creating ${article ? `${article} ` : ""}${recipe.itemName} requires ${englishIndefinite(rarity)} `
+    + `${rarity} Workshop and the following ${rarity} Components:`;
+}
+
 function header(recipe, l, nameHtml) {
   const rarity = rarityLabel(recipe.workshop, l);
   const open = `<p class="${BLOCK_CLASS}">`;
@@ -176,6 +190,23 @@ export function renderRecipeHtml(recipe, { lang = recipe?.lang, nameHtml } = {})
   ).join("");
   const distinct = recipe.distinctSources ? `<p class="${BLOCK_CLASS}">${DISTINCT[l]}</p>` : "";
   return `${header(recipe, l, nameHtml)}<ul class="${BLOCK_CLASS}">${items}</ul>${distinct}`;
+}
+
+/**
+ * The "Crafting." block as plain text (one line per Component, then the distinct-sources sentence): the
+ * description of the Fabricate recipe.
+ * @param {object} recipe
+ * @param {object} [options]
+ * @param {"en"|"fr"} [options.lang]   Defaults to `recipe.lang`.
+ * @returns {string}
+ */
+export function renderRecipeText(recipe, { lang = recipe?.lang } = {}) {
+  const l = language(lang);
+  const lines = (recipe.components ?? []).map((component) =>
+    `- [${categoryLabel(component.category, l)}] ${renderLine(component, recipe, l)}`
+  );
+  const distinct = distinctSentence(recipe, l);
+  return [headerText(recipe, l), ...lines, ...(distinct ? [distinct] : [])].join("\n");
 }
 
 /**
