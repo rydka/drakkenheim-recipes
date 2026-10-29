@@ -8,3 +8,6 @@ export const RECIPE_VERSION = 1;
 export const FLAG_FABRICATE = "fabricate";
 /** Flag key under `flags.drakkenheim-recipes` marking a generic component or Workshop item created by the module. */
 export const FLAG_GENERIC = "generic";
+/** Default Item folders of the Fabricate integration (settings `fabricateComponentFolder`, `fabricateWorkshopFolder`). */
+export const DEFAULT_COMPONENT_FOLDER = "Monster Components";
+export const DEFAULT_WORKSHOP_FOLDER = "Workshops";

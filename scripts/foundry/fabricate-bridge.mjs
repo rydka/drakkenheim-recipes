@@ -5,14 +5,34 @@
  * Fabricate call goes through `step`, which turns an exception into an error result: nothing is thrown to the
  * caller, nothing written before the error is undone (reapplying finishes the work, everything is idempotent).
  */
-import { FLAG_FABRICATE, FLAG_GENERIC, MODULE_ID } from "../constants.mjs";
+import { DEFAULT_COMPONENT_FOLDER, DEFAULT_WORKSHOP_FOLDER, FLAG_FABRICATE, FLAG_GENERIC, MODULE_ID } from "../constants.mjs";
 import {
-  FABRICATE_DEFAULT_MODE, componentItemData, missingVocabulary, translateRecipe, vocabularyPatch, workshopItemData
+  DEFAULT_SYSTEM_NAME, FABRICATE_DEFAULT_MODE, componentItemData, missingVocabulary, translateRecipe, vocabularyPatch,
+  workshopItemData
 } from "../core/fabricate-translate.mjs";
 import { getItemFolder } from "./folders.mjs";
-import { getOptions } from "./settings.mjs";
 
 const FABRICATE_ID = "fabricate";
+
+/** Whether the Fabricate module is installed and active (no API call). */
+export function isFabricateActive() {
+  return game.modules?.get?.(FABRICATE_ID)?.active === true;
+}
+
+/**
+ * The Fabricate settings of the module, read here so that `settings.mjs` needs nothing from Fabricate.
+ * @returns {{ enabled: boolean, systemName: string, componentFolder: string, workshopFolder: string }}
+ */
+export function fabricateOptions() {
+  const get = (name) => game.settings.get(MODULE_ID, name);
+  const text = (name, fallback) => String(get(name) ?? "").trim() || fallback;
+  return {
+    enabled: Boolean(get("fabricateEnabled")),
+    systemName: text("fabricateSystemName", DEFAULT_SYSTEM_NAME),
+    componentFolder: text("fabricateComponentFolder", DEFAULT_COMPONENT_FOLDER),
+    workshopFolder: text("fabricateWorkshopFolder", DEFAULT_WORKSHOP_FOLDER)
+  };
+}
 
 /** Methods the module needs, by manager (C11: a missing one means no write at all). */
 export const REQUIRED_API = {
@@ -42,7 +62,7 @@ export function resetFabricateState() {
 
 /** Whether Fabricate is active and ready: its hook was seen, or its instance says so (no API call, C13). */
 export function isFabricateReady() {
-  if (game.modules?.get?.(FABRICATE_ID)?.active === false) return false;
+  if (game.modules?.get?.(FABRICATE_ID) && !isFabricateActive()) return false;
   return readyHookSeen || game.fabricate?.ready === true;
 }
 
@@ -201,7 +221,7 @@ export async function syncFabricateRecipe(item, recipe, { schematic = null, item
     return { status: "unavailable", reason: "api", missing: check.missing };
   }
 
-  const options = getOptions().fabricate;
+  const options = fabricateOptions();
   const lang = recipe.lang === "fr" ? "fr" : "en";
   const systems = game.fabricate.getCraftingSystemManager();
   const recipes = game.fabricate.getRecipeManager();
