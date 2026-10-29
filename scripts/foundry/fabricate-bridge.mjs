@@ -192,11 +192,12 @@ export async function syncFabricateRecipe(item, recipe, { schematic = null, item
   if (!isFabricateReady()) return { status: "unavailable", reason: "notReady" };
   const check = checkFabricateApi();
   if (!check.ok) {
+    // Said once per session, in the console and to the GM (C11)
     if (!apiWarned) {
       apiWarned = true;
       console.warn(`${MODULE_ID} | Fabricate API mismatch, nothing written. Missing: ${check.missing.join(", ")}`);
+      notifyError(notify, "FabricateApi", { missing: check.missing.join(", ") });
     }
-    notifyError(notify, "FabricateApi", { missing: check.missing.join(", ") });
     return { status: "unavailable", reason: "api", missing: check.missing };
   }
 
