@@ -44,6 +44,12 @@
     <input type="checkbox" name="createSchematic" {{checked createSchematic}}>
     {{localize "drakkenheim-recipes.Dialog.CreateSchematic"}}
   </label>
+  {{#if fabricate}}
+  <label class="checkbox">
+    <input type="checkbox" name="createFabricate" {{checked fabricate.checked}}>
+    {{localize "drakkenheim-recipes.Dialog.CreateFabricate"}}
+  </label>
+  {{/if}}
 
   <footer class="form-footer">
     <button type="button" data-action="regenerate"><i class="fa-solid fa-dice" inert></i> {{localize "drakkenheim-recipes.Dialog.Regenerate"}}</button>

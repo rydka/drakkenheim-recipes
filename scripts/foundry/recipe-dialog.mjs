@@ -9,6 +9,7 @@ import { findRecipeBlock } from "../core/description.mjs";
 import { generateRecipe, regenerateRecipe } from "../core/generate.mjs";
 import { categoryLabel, distinctSentence, rarityLabel, renderLine } from "../core/render.mjs";
 import { applyRecipe } from "./apply.mjs";
+import { isFabricateReady } from "./fabricate-bridge.mjs";
 import { getOptions } from "./settings.mjs";
 
 // Resolved lazily so that importing this file outside Foundry (unit tests) does not throw.
@@ -42,6 +43,8 @@ export class RecipeDialog extends Base {
   /** The last generated proposal, untouched by the GM: regeneration starts from its categories, not from the edits. */
   #generated;
   #createSchematic;
+  /** Also create the Fabricate recipe (feature `fabricate`, C1); offered only to a GM when Fabricate is ready. */
+  #createFabricate;
   /** The GM edited, removed or added a line since the last generation. */
   #edited = false;
   /** Edits were discarded by the last regeneration: said once. */
@@ -62,6 +65,7 @@ export class RecipeDialog extends Base {
     this.#rarities = getRarities(this.#itemData);
     this.#rarity = this.#rarities[0];
     this.#createSchematic = this.#options.createSchematic;
+    this.#createFabricate = Boolean(this.#options.fabricate?.enabled);
     this.#existing = findRecipeBlock(this.#itemData.system?.description?.value ?? "");
     this.#propose(generateRecipe(this.#itemData, { ...this.#options, rarity: this.#rarity }));
   }
@@ -89,6 +93,11 @@ export class RecipeDialog extends Base {
     return foundry.utils.deepClone(this.#recipe);
   }
 
+  /** Whether the Fabricate box is offered: GM only (C12) and Fabricate ready (C1). */
+  get fabricateOffered() {
+    return Boolean(game.user?.isGM) && isFabricateReady();
+  }
+
   /** @override */
   async _prepareContext() {
     const recipe = this.#recipe;
@@ -113,6 +122,7 @@ export class RecipeDialog extends Base {
       })),
       distinct: distinctSentence(recipe, lang),
       createSchematic: this.#createSchematic,
+      fabricate: this.fabricateOffered ? { checked: this.#createFabricate } : null,
       existing: Boolean(this.#existing),
       edited: this.#edited,
       lost
@@ -132,6 +142,9 @@ export class RecipeDialog extends Base {
     root.querySelector('select[name="rarity"]')?.addEventListener("change", (event) => this.#changeRarity(event.currentTarget.value));
     root.querySelector('input[name="createSchematic"]')?.addEventListener("change", (event) => {
       this.#createSchematic = event.currentTarget.checked;
+    });
+    root.querySelector('input[name="createFabricate"]')?.addEventListener("change", (event) => {
+      this.#createFabricate = event.currentTarget.checked;
     });
   }
 
@@ -203,7 +216,9 @@ export class RecipeDialog extends Base {
       const recipe = foundry.utils.deepClone(this.#recipe);
       // Added lines left empty are dropped
       recipe.components = recipe.components.filter((c) => c.designation || c.category === "animus" || (c.text ?? "").trim());
-      await applyRecipe(this.#item, recipe, { createSchematic: this.#createSchematic });
+      await applyRecipe(this.#item, recipe, {
+        createSchematic: this.#createSchematic, createFabricate: this.fabricateOffered && this.#createFabricate
+      });
       await this.close();
     } catch (err) {
       console.error(`${MODULE_ID} | apply failed`, err);

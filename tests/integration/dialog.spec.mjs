@@ -23,7 +23,7 @@ test("C2: the window shows workshop, CR range, components, sentence, Schematic c
   expect(rows[0].category).toMatch(/Animus/i);
   expect(rows[0].text).toMatch(/Animus/);
   for (const r of rows) expect(r.text).toMatch(/\(CR 5–10\)$/);
-  await expect(dialog.getByRole("checkbox")).toBeChecked();
+  await expect(dialog.locator('input[name="createSchematic"]')).toBeChecked();
   for (const name of [/Regenerate|Regénérer/i, /Apply|Appliquer/i, /Cancel|Annuler/i]) {
     await expect(dialog.getByRole("button", { name }).first()).toBeVisible();
   }
@@ -77,7 +77,7 @@ test("C2: the Schematic checkbox follows the createSchematic setting", async ({ 
   await foundry((id) => game.settings.set(id, "createSchematic", false), "drakkenheim-recipes");
   const id = await create(foundry, weaponData());
   const dialog = await openDialogViaButton(gamePage, foundry, id);
-  await expect(dialog.getByRole("checkbox")).not.toBeChecked();
+  await expect(dialog.locator('input[name="createSchematic"]')).not.toBeChecked();
 });
 
 test("C8: Regenerate keeps the window open, keeps the categories and changes at least one line", async ({ gamePage, foundry }) => {

@@ -171,7 +171,7 @@ test("C11: an existing `Schematics` folder is reused; the folder name is a setti
 test("C11: with the checkbox cleared, no Schematic and no folder are created but the item is updated", async ({ gamePage, foundry }) => {
   const id = await create(foundry, weaponData());
   const dialog = await openDialogViaButton(gamePage, foundry, id);
-  await dialog.getByRole("checkbox").uncheck();
+  await dialog.locator('input[name="createSchematic"]').uncheck();
   await apply(dialog);
   expect(await schematics(foundry)).toHaveLength(0);
   expect(await foundry(() => game.folders.filter((f) => f.type === "Item" && f.name === "Schematics").length)).toBe(0);

@@ -13,6 +13,7 @@
       "AddRow": "Add a Component",
       "DeleteRow": "Remove this Component",
       "CreateSchematic": "Also create the Schematic",
+      "CreateFabricate": "Also create the Fabricate recipe",
       "Regenerate": "Regenerate",
       "Apply": "Apply",
       "Cancel": "Cancel",
@@ -26,7 +27,11 @@
       "SchematicUpdated": "{name} updated.",
       "ItemLocked": "{name} belongs to a locked compendium: the item was not modified. Unlock the compendium or import the item to write the recipe on it.",
       "ItemPermission": "You lack permission to modify {name}: the item was not modified.",
-      "ApplyFailed": "The recipe could not be applied: {error}"
+      "ApplyFailed": "The recipe could not be applied: {error}",
+      "FabricateCreated": "Fabricate recipe \"{name}\" created in \"{system}\" ({components} new components, {tools} new tools, {items} new items).",
+      "FabricateUpdated": "Fabricate recipe \"{name}\" updated in \"{system}\" ({components} new components, {tools} new tools, {items} new items).",
+      "FabricateFailed": "Fabricate: step {step} failed: {error}. The description, the flag and the Schematic were kept.",
+      "FabricateApi": "Fabricate: incompatible version, nothing was written (missing: {missing})."
     },
     "settings": {
       "countsPermanent": {
@@ -50,6 +55,22 @@
         "hint": "Language of the Crafting paragraph and of the Schematic. English keeps the text consistent with the Drakkenheim module.",
         "en": "English",
         "fr": "French"
+      },
+      "fabricateEnabled": {
+        "name": "Fabricate integration by default",
+        "hint": "Initial state of the \"Also create the Fabricate recipe\" box in the preview."
+      },
+      "fabricateSystemName": {
+        "name": "Fabricate crafting system",
+        "hint": "Name of the Fabricate crafting system that receives the recipes; created if missing."
+      },
+      "fabricateComponentFolder": {
+        "name": "Monster Components folder",
+        "hint": "Name of the Items folder where the generic components (Rare Bones, Rare Animus...) are created."
+      },
+      "fabricateWorkshopFolder": {
+        "name": "Workshops folder",
+        "hint": "Name of the Items folder where the Workshop tools are created."
       }
     },
     "errors": {

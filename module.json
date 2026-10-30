@@ -2,7 +2,7 @@
   "id": "drakkenheim-recipes",
   "title": "Drakkenheim Recipe Generator",
   "description": "Generate Monsters of Drakkenheim crafting recipes (workshop and monster components) for any magic item, with schematics.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
     {
       "name": "Rydka"
@@ -20,6 +20,17 @@
         "compatibility": {
           "minimum": "6.0.0",
           "verified": "6.0.6"
+        }
+      }
+    ],
+    "recommends": [
+      {
+        "id": "fabricate",
+        "type": "module",
+        "reason": "Crafting recipes are also created in Fabricate when it is active.",
+        "compatibility": {
+          "minimum": "1.14.0",
+          "verified": "1.14.1"
         }
       }
     ]

@@ -1,9 +1,16 @@
-/** Application of a recipe (C9 to C12): description block, flag, and Schematic item in its folder. */
+/**
+ * Application of a recipe (C9 to C12): description block, flag, Schematic item in its folder, then (feature
+ * `fabricate`, C2) the Fabricate recipe, last, so that a Fabricate failure never undoes the rest.
+ */
 import { FLAG_RECIPE, MODULE_ID } from "../constants.mjs";
 import { replaceRecipeBlock } from "../core/description.mjs";
 import { renderRecipeHtml, schematicName } from "../core/render.mjs";
 import { buildSchematicData } from "../core/schematic.mjs";
+import { syncFabricateRecipe } from "./fabricate-bridge.mjs";
+import { getItemFolder } from "./folders.mjs";
 import { getOptions } from "./settings.mjs";
+
+export { getItemFolder };
 
 /**
  * Whether the current user can write the item, and why not (C12).
@@ -19,13 +26,8 @@ export function getEditability(item) {
   return { editable: true, reason: null };
 }
 
-/** The top-level Item folder of that name, created if missing. */
-export async function getSchematicFolder(name) {
-  const existing = game.folders.find((f) => f.type === "Item" && f.name === name && !f.folder);
-  if (existing) return existing;
-  const Folder = foundry.utils.getDocumentClass("Folder");
-  return Folder.create({ name, type: "Item" });
-}
+/** The top-level Item folder of that name, created if missing (alias of `getItemFolder`). */
+export const getSchematicFolder = getItemFolder;
 
 /**
  * The Schematic of that item already in the folder: by item UUID first, then by name. Only items carrying the
@@ -45,12 +47,15 @@ function findExistingSchematic(folder, recipe, lang) {
  * @param {object} recipe
  * @param {object} [options]
  * @param {boolean} [options.createSchematic=true]
+ * @param {boolean} [options.createFabricate=false]   Also create or update the Fabricate recipe (needs Fabricate).
  * @param {boolean} [options.notify=true]   Show the user notifications.
- * @returns {Promise<{ itemUpdated: boolean, reason: null|"locked"|"permission", schematic: Item|null }>}
+ * @returns {Promise<{ itemUpdated: boolean, reason: null|"locked"|"permission", schematic: Item|null,
+ *   fabricate: object|null }>}   `fabricate` is the sync result (`status` created, updated, error, unavailable or
+ *   skipped) when `createFabricate` was asked, else `null`.
  */
-export async function applyRecipe(item, recipe, { createSchematic = true, notify = true } = {}) {
+export async function applyRecipe(item, recipe, { createSchematic = true, createFabricate = false, notify = true } = {}) {
   const lang = recipe.lang === "fr" ? "fr" : "en";
-  const result = { itemUpdated: false, reason: null, schematic: null };
+  const result = { itemUpdated: false, reason: null, schematic: null, fabricate: null };
   const say = (level, key, data) => notify && ui.notifications[level](game.i18n.format(`${MODULE_ID}.Messages.${key}`, data));
 
   const { editable, reason } = getEditability(item);
@@ -79,5 +84,12 @@ export async function applyRecipe(item, recipe, { createSchematic = true, notify
   }
 
   if (result.itemUpdated) say("info", "Applied", { name: item.name });
+
+  // Last, and never throwing: the Fabricate recipe (C2)
+  if (createFabricate) {
+    result.fabricate = await syncFabricateRecipe(item, recipe, {
+      schematic: result.schematic, itemEditable: result.itemUpdated, notify
+    });
+  }
   return result;
 }

@@ -1,5 +1,6 @@
 import { MODULE_ID } from "./constants.mjs";
 import { registerApi } from "./foundry/api.mjs";
+import { registerFabricateHooks } from "./foundry/fabricate-bridge.mjs";
 import { registerSettings } from "./foundry/settings.mjs";
 import { onGetHeaderControls, onRenderItemSheet } from "./foundry/sheet-button.mjs";
 
@@ -7,6 +8,8 @@ export { MODULE_ID };
 
 Hooks.once("init", () => {
   registerSettings();
+  // Only listens: no Fabricate API is called before its `fabricate.ready` hook (C13)
+  registerFabricateHooks();
   Hooks.on("renderItemSheet5e", onRenderItemSheet);
   Hooks.on("getHeaderControlsItemSheet5e", onGetHeaderControls);
   globalThis.foundry?.applications?.handlebars?.loadTemplates?.([`modules/${MODULE_ID}/templates/recipe-dialog.hbs`]);
